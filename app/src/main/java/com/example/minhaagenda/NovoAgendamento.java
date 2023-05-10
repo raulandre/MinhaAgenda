@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,9 @@ public class NovoAgendamento extends Fragment {
 
     EditText dataEdt;
     EditText horaEdt;
+    EditText descricaoEdt;
+
+    Button btnSalvar;
 
     public NovoAgendamento() {
     }
@@ -46,6 +50,15 @@ public class NovoAgendamento extends Fragment {
         View view = inflater.inflate(R.layout.fragment_novo_agendamento, container, false);
         dataEdt = (EditText)view.findViewById(R.id.edt_data);
         horaEdt = (EditText)view.findViewById(R.id.edt_hora);
+        descricaoEdt = (EditText)view.findViewById(R.id.descricao);
+        btnSalvar = (Button)view.findViewById(R.id.btn_salvar);
+
+        btnSalvar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Etapa3", "Clicou no botao com descricao \"" + descricaoEdt.getText() + "\", Data " + dataEdt.getText() + " e hora " + horaEdt.getText());
+            }
+        });
 
         dataEdt.setOnClickListener(new View.OnClickListener() {
             @Override

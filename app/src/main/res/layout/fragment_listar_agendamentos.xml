@@ -31,11 +31,11 @@
             android:focusableInTouchMode="false"
             android:focusable="false"></EditText>
         <Button
+            android:id="@+id/btn_buscar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Buscar"
             android:layout_marginRight="5dp">
-
         </Button>
     </LinearLayout>
 

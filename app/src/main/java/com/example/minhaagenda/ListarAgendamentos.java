@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ public class ListarAgendamentos extends Fragment {
 
     EditText dataEdt;
     ListView lstAgendamentos;
+    Button btnBuscar;
 
     public ListarAgendamentos() {
     }
@@ -49,6 +51,14 @@ public class ListarAgendamentos extends Fragment {
         View view = inflater.inflate(R.layout.fragment_listar_agendamentos, container, false);
         dataEdt = (EditText)view.findViewById(R.id.listar_edt_data);
         lstAgendamentos = (ListView)view.findViewById(R.id.lst_agendamentos);
+        btnBuscar = (Button)view.findViewById(R.id.btn_buscar);
+
+        btnBuscar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Etapa3", "Clicou no botao buscar na data " + dataEdt.getText());
+            }
+        });
 
         String[] agendamentosTeste = { "Estudar - 10:30", "Fazer compras - 11:30", "Dominar o mundo - 12:30" };
         ArrayAdapter adapter = new ArrayAdapter<String>(getContext(), R.layout.item_agendamento, agendamentosTeste);
