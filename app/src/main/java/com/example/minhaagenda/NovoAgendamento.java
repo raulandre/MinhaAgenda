@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,11 +17,16 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 
 import java.sql.Time;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class NovoAgendamento extends Fragment {
+public class NovoAgendamento extends Fragment implements AutoCloseable {
+
+    CompromissosDB db;
 
     EditText dataEdt;
     EditText horaEdt;
@@ -28,8 +34,7 @@ public class NovoAgendamento extends Fragment {
 
     Button btnSalvar;
 
-    public NovoAgendamento() {
-    }
+    public NovoAgendamento() { }
 
     public static NovoAgendamento newInstance() {
         NovoAgendamento fragment = new NovoAgendamento();
@@ -47,6 +52,8 @@ public class NovoAgendamento extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        db = new CompromissosDB(getContext());
+
         View view = inflater.inflate(R.layout.fragment_novo_agendamento, container, false);
         dataEdt = (EditText)view.findViewById(R.id.edt_data);
         horaEdt = (EditText)view.findViewById(R.id.edt_hora);
@@ -56,7 +63,24 @@ public class NovoAgendamento extends Fragment {
         btnSalvar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Etapa3", "Clicou no botao com descricao \"" + descricaoEdt.getText() + "\", Data " + dataEdt.getText() + " e hora " + horaEdt.getText());
+                try {
+                    Compromisso c = new Compromisso(dataEdt.getText().toString(), horaEdt.getText().toString(), descricaoEdt.getText().toString());
+                    db.insertCompromisso(c);
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    ListarAgendamentos listarAgendamentos = null;
+                    for(Fragment f : fm.getFragments()) {
+                        if(f instanceof ListarAgendamentos) {
+                            listarAgendamentos = (ListarAgendamentos)f;
+                            break;
+                        }
+                    }
+
+                    if(listarAgendamentos != null) {
+                        listarAgendamentos.BuscarCompromissos();
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -102,7 +126,8 @@ public class NovoAgendamento extends Fragment {
         return view;
     }
 
-    private void close() {
-        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+    @Override
+    public void close() throws Exception {
+        db.close();
     }
 }

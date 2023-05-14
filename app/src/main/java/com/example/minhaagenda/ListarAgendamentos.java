@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -24,13 +25,17 @@ import java.util.List;
  * Use the {@link ListarAgendamentos#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListarAgendamentos extends Fragment {
+public class ListarAgendamentos extends Fragment implements AutoCloseable {
+
+    CompromissosDB db;
+    ArrayList<String> compromissos;
 
     EditText dataEdt;
     ListView lstAgendamentos;
     Button btnBuscar;
 
     public ListarAgendamentos() {
+        compromissos = new ArrayList<>();
     }
 
     public static ListarAgendamentos newInstance() {
@@ -48,6 +53,8 @@ public class ListarAgendamentos extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        db = new CompromissosDB(getContext());
+
         View view = inflater.inflate(R.layout.fragment_listar_agendamentos, container, false);
         dataEdt = (EditText)view.findViewById(R.id.listar_edt_data);
         lstAgendamentos = (ListView)view.findViewById(R.id.lst_agendamentos);
@@ -56,13 +63,11 @@ public class ListarAgendamentos extends Fragment {
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Etapa3", "Clicou no botao buscar na data " + dataEdt.getText());
+                BuscarCompromissos();
             }
         });
 
-        String[] agendamentosTeste = { "Estudar - 10:30", "Fazer compras - 11:30", "Dominar o mundo - 12:30" };
-        ArrayAdapter adapter = new ArrayAdapter<String>(getContext(), R.layout.item_agendamento, agendamentosTeste);
-        lstAgendamentos.setAdapter(adapter);
+        BuscarCompromissos();
 
         dataEdt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,5 +92,31 @@ public class ListarAgendamentos extends Fragment {
             }
         });
         return view;
+    }
+
+    public void BuscarCompromissos() {
+        compromissos.clear();
+        String data = dataEdt.getText().toString();
+
+        ArrayList<Compromisso> resultado = new ArrayList<>();
+
+        if(data.length() > 0) {
+            resultado = db.selectCompromissos("data = ?", new String[]{ data });
+        } else {
+            resultado = db.selectCompromissos();
+        }
+
+        for(int i = 0; i < resultado.size(); i++) {
+            Compromisso c = resultado.get(i);
+            compromissos.add(c.getDescricao() + " - " + c.getData() + " - " + c.getHora());
+        }
+
+        ArrayAdapter adapter = new ArrayAdapter<String>(getContext(), R.layout.item_agendamento, compromissos);
+        lstAgendamentos.setAdapter(adapter);
+    }
+
+    @Override
+    public void close() throws Exception {
+        db.close();
     }
 }
