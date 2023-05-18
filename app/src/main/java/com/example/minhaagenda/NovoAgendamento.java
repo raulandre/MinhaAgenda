@@ -78,6 +78,10 @@ public class NovoAgendamento extends Fragment implements AutoCloseable {
                     if(listarAgendamentos != null) {
                         listarAgendamentos.BuscarCompromissos();
                     }
+
+                    descricaoEdt.setText("");
+                    dataEdt.setText("");
+                    horaEdt.setText("");
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
