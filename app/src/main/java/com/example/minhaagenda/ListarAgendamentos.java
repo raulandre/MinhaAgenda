@@ -1,6 +1,7 @@
 package com.example.minhaagenda;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -89,6 +90,13 @@ public class ListarAgendamentos extends Fragment implements AutoCloseable {
                         },
                         year, month, day);
                 datePickerDialog.show();
+
+                datePickerDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        dataEdt.setText("");
+                    }
+                });
             }
         });
         return view;
